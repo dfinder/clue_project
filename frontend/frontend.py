@@ -1,0 +1,1 @@
+#The front end is just the map, the message log, the notes, all wrapped up together in one window.

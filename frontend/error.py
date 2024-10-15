@@ -1,0 +1,1 @@
+#I handle an error message that occurs before the message log pops up. This will probably just be on failure to connect to host.
