@@ -1,7 +1,10 @@
 class GameInitializer(Object):
     def __init__(self,controller_controller):
         pass 
-        
+
+    def choose_character(): #allows player to choose a character
+        pass  
+    
     def host_init(self, player_mapping:List[(int,Character)]):
         pass
     
@@ -11,3 +14,4 @@ class GameInitializer(Object):
         pass
     #Note that game initialization occurs somewhat differently for client and host. 
     #The client will copy the hosts initialization while waiting for the main screen to pop up.
+    
