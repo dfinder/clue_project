@@ -6,4 +6,6 @@ class GameStateController(object):
     location_controller: LocationController 
     gamestate: Gamestate
     def __init__(self):
-        #Initialize 
+        #Initialize the gamestate
+        #Initialize the controllers, giving them access to the game state.
+        

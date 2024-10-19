@@ -1,11 +1,12 @@
 #I handle the
 from enum import Enum 
 class AckStateMachine(Enum):
-    WAIT #I AM WAITING ON THE UI TO UPDATE GAME STATE
-    HOST_ACK #I AM WAITING ON THE HOST ACK, BECAUSE IT IS NOT MY TURN OR I AM A PLAYER WHO JUST MADE A TURN
-    CLIENT_ACK # I HAVE HEARD FROM THE HOST, I AM WAITING ON THE OTHER CLIENTS
-    GAME_ACK #I AM WAITING ON THE GAMESTATE, EVERYONE CAN UPDATE WITH MY COOL NEW MOVE
-
+    UI_WAIT #I AM WAITING ON THE UI TO UPDATE GAME STATE
+    HOST_WAIT #I AM WAITING ON THE HOST ACK, BECAUSE IT IS NOT MY TURN OR I AM A PLAYER WHO JUST MADE A TURN
+    CLIENT_WAIT # I HAVE HEARD FROM THE HOST, I AM WAITING ON THE OTHER CLIENTS
+    GAME_WAIT #I AM WAITING ON THE GAMESTATE, EVERYONE CAN UPDATE WITH MY COOL NEW MOVE
+    READY_WAIT #I AM WAITING ON EVERYONE TO BE READY FOR THE UI TO BE ABLE TO DO THINGS
+    
 #So the player is in wait, the other clients are in host ack
 #Then when the player makes a move, they go to host_ack, unless they're the host, in which case they goe into client ack
 #The host is in client ack, and retransmits to clients, allowing them to move from host ack to client ack.
