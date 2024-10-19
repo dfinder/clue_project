@@ -63,12 +63,15 @@ class Notes_Controller:
     
     def crossOffSuspect(self, suspect):
         self.suspects[suspect] = True
+        print(f"{suspect} crossed off.")
 
     def crossOffWeapon(self, weapon):
         self.weapons[weapon] = True
+        print(f"{weapon} crossed off.")
     
     def crossOffRoom(self, room):
         self.rooms[room] = True
+        print(f"{room} crossed off.")
     
     def isSuspectCrossedOff(self, suspect):
         return self.suspects[suspect]
