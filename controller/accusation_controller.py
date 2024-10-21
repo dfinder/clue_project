@@ -1,1 +1,3 @@
-#Handles winning and losing!
+def accuse():
+    #makes an accusation
+    pass
