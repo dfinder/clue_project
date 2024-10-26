@@ -1,22 +1,47 @@
-class AbstractController(Object):
+from messages import messages
+class AbstractController(object):
     pass 
-class ControllerController(Object):
+
+def UIActionMessage(Message):
+    Button_Clicked = None 
+
+    #Types: 
+    #Button push
+def NetworkBroadcastMessage(Message):
+    
+def NetworkUpdateMessage(Message):
+
+def GameStateUpdateMessage(Message):
+
+def GameStateRetrievalMessage(Message):
+
+def UIUpdateMessage(Message):
+    pass 
+class game_phase(Enum):
+    NOT_TURN=()
+    MAKING_GUESS:(Character,)
+
+    
+
+class ControllerController(object):
     #This controller sets up and coordinates with all the other controllers, and passes the gamestate to them.
-    ui_controller: UIController
-    network_controller: NetworkController 
-    gs_controller: GameStatecontroller
-    #....
-    #You get the idea
+    ui_controller= UIController
+    network_controller= NetworkController 
+    gs_controller= GameStateController
+    game_phase = game_phase
     def __init__(self,networking):
         #Set up controllers for basic systems, like UI, Networking
 
-        pass 
+        pass
+    def ui_event(self,UIActionMessage):
+        #Unwrap UI
 
-    def ui_event(self,UIEvent):
-        #What happens when we get a UI event from the UI Controller? 
-        #Pass it to the gamestate to figure out what it's context is
-        pass 
-    def network_event(self,NetworkEvent):
+    def ui_update(self,UIUpdateMeessage):
+        
+        pass
+    def network_broadcast(self,NetworkBroadcastMessage):
+        pass
+    def network_event(self,NetworkUpdateEvent):
         pass 
         #What happens when we get a network event?
         #We update the gamestate

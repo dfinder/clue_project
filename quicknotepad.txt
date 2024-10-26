@@ -1,0 +1,30 @@
+okay what are we doing:
+
+use case:
+
+everyone is in their rooms.
+
+ms scarlet(player) is in the LIBRARY
+professor plum is in the kitchen
+ms white is in between the study and the Hall
+mr green is in the conservatory. 
+PEACOCK IS AT PEACOCK_START 
+MUSTARD IS AT MUSTARD_START
+
+the other two are on their starting squares. 
+you get a popup for what your options are:
+IT'S YOUR TURN!
+MOVE[0]
+LOOK AT NOTES[1]
+ACCUSE[2]
+LOOK AT BOARD[2]
+
+You decide to move
+THE UI ASKS THE GAME STATE FOR THE VALID MOVES 
+UI->CONTROLLER_CONTROLLER-> GAMESTATE->MOVE_CONTROLLER->POSSIBLE_MOVES(Scarlet)
+MOVEMENT OPTIONS:
+STUDY HALLWAY[0]
+BILLARD HALLWAY[1] 
+CONSERVATORY HALLWAY[2]
+YOU INPUT THE BILLARD HALLWAY 
+UI->CONTROLLER_CONTROLLER->NETWORK->MOVE_CONTROLLER->POSSIBLE_MOVES
