@@ -19,4 +19,4 @@ class GameState(object):
     def __init__(self):
         pass
     def init_players(self,players:list[(NetworkConnection,Character)]):
-        #        
+        pass   

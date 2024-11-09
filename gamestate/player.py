@@ -1,12 +1,10 @@
 from gamestate import GameStateObject
-from card import Card 
+from card import Card,Deck
 from character import Character
 from location import Location
 from suggestion import Suggestion
 ID = int
 class Player(GameStateObject):
-
-
     PlayerID:ID
     TurnOrder: int 
     PlayingPiece: Character

@@ -1,6 +1,6 @@
 
 from enum import Enum 
-
+from location import Location
 class RoomEnum(Enum):
     HALL=0
     LOUNGE=1

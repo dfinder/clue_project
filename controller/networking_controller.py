@@ -14,3 +14,4 @@ class AckStateMachine(Enum):
 
 
 class NetworkState(object):
+    pass

@@ -9,6 +9,7 @@ class accusation(GameStateObject):
     character: Character 
     weapon: Weapon 
     room: Room
+    
     def __init__(self,player:Player,character:Character,weapon:Weapon,location:Location):
         self.player = player 
         self.character = character
