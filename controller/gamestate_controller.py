@@ -6,6 +6,21 @@ class GameStateController(object):
     location_controller: LocationController 
     gamestate: Gamestate
     def __init__(self):
+        pass 
         #Initialize the gamestate
         #Initialize the controllers, giving them access to the game state.
-    def _
+   
+class Player(object):
+    def __init__(self):
+        self.hand = [] 
+        self.piece = None 
+        self.knowledge = [] 
+        self.location = None 
+        self.teleported = False 
+        self.lost = False 
+    def move(self,location):
+        self.location = location 
+    def teleport(self,location):
+        self.location = location 
+        self.telported = True 
+    def accuse( )
