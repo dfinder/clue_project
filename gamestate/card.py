@@ -1,17 +1,11 @@
-from gamestate import GameStateObject
-from enum import Enum
+#from gamestate import GameStateObject
 from weapons import WeaponEnum
 from rooms import RoomEnum
 from character import CharacterEnum
 import random
 
-
-class CardType(Enum):
-    CHARACTER = 0
-    WEAPON = 1 
-    LOCATION = 2
-
-class Card(GameStateObject):
+#I don't think we need these enums
+class Card():
     # Cards that will be used in Clue. 
     # A card is more so a wrapper for a character, a weapon, or a room 
     def __init__(self, value:str): 
@@ -27,16 +21,33 @@ class Card(GameStateObject):
         Returns: None'''
         return self.value
 
-#subclasses of cards. Purpose is to quickly identify the card type so they can easily be put in the envelope
+#subclasses of class Card. Purpose is to quickly identify the card type so they can easily be put in the envelope
 class CharacterCard(Card): 
-    pass
+    def __init__(self, value:str): 
+        '''initializes the character card class with a value. 
+        The value will be the enum name represented as a string
+        Args: None 
+        Returns: None'''
+        super.__init__(value)
 class WeaponCard(Card):
-    pass
+     def __init__(self, value:str): 
+        '''initializes the weapon card class with a value. 
+        The value will be the enum name represented as a string
+        Args: None 
+        Returns: None'''
+        super.__init__(value)
+        
 class LocationCard(Card):
-    pass
+      def __init__(self, value:str): 
+        '''initializes the location card class with a value. 
+        The value will be the enum name represented as a string
+        Args: None 
+        Returns: None'''
+        super.__init__(value)
+        
     
-class Deck(GameStateObject):
-    def initializeDeck(self):
+class Deck():
+    def __init__(self):
         '''
         initializes the cards by iterating through the enums and assigning values
         Args: None 
@@ -70,6 +81,8 @@ class Deck(GameStateObject):
         Args: object of type Card. 
         Returns: None'''
         self.deck.append(card)
+
+
 
 
         
