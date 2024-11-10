@@ -15,37 +15,72 @@ class TestCard(unittest.TestCase):
 class TestDeck(unittest.TestCase):
     def test_deck_gets_made(self):
         d = Deck()
-        self.assertEqual(len(d.deck), 21)
-        characterCardList = [card for card in d.deck if isinstance(CharacterCard)]
-        locationCardList = [card for card in d.deck if isinstance(LocationCard)]
-        weaponCardList = [card for card in d.deck if isinstance(WeaponCard)]
-        self.assertEqual(len(characterCardList), 6)
-        self.assertEqual(len(locationCardList), 9)
-        self.assertEqual(len(weaponCardList), 6)
+        self.assertEqual(len(d.character_deck), 6)
+        self.assertTrue(all(isinstance(card, CharacterCard) for card in d.character_deck))
+        
+        self.assertEqual(len(d.location_deck), 9)
+        self.assertTrue(all(isinstance(card, LocationCard) for card in d.location_deck))
+        
+        self.assertEqual(len(d.weapon_deck), 6)
+        self.assertTrue(all(isinstance(card, WeaponCard) for card in d.weapon_deck))
 
-    def test_deck_is_shuffled(self):
+    def test_decks_are_shuffled(self):
         d = Deck()
-        original_deck = d.deck()
-        d.shuffleDeck()
-        shuffled_deck = d.deck()
-        self.assertEqual(original_deck, shuffled_deck)
+        original_character_deck = d.character_deck
+        original_weapon_deck = d.weapon_deck
+        original_location_deck = d.location_deck
+        d.shuffleDecks()
+        self.assertNotEqual(original_character_deck, d.character_deck)
+        self.assertNotEqual(original_weapon_deck, d.weapon_deck)
+        self.assertNotEqual(original_location_deck, d.location_deck)
 
-    def test_add_card(self):
+    def test_add_card_to_character_deck(self):
         d = Deck()
-        original_deck = d.deck()
-        c = Card("test")
-        d.addCard(c)
-        new_deck = d.deck()
-        self.assertNotEqual(len(new_deck), len(original_deck)) #avoids dependencies on other tests
-        self.assertLess(len(original_deck), len(new_deck))
+        original_character_deck = d.character_deck
+        c = CharacterCard("test")
+        d.addCardtoCharacterDeck(c)
+        new_deck = d.character_deck
+        self.assertLess(len(original_character_deck), len(new_deck))
     
-    def test_remove_card(self):
+    def test_remove_card_from_character_deck(self):
         d = Deck()
-        original_deck = d.deck()
-        d.removeCard()
-        new_deck = d.deck()
-        self.assertNotEqual(len(new_deck), len(original_deck)) #avoids dependencies on other tests
-        self.assertGreater(len(original_deck), len(new_deck))
+        original_character_deck = d.character_deck
+        d.removeCardfromCharacterDeck()
+        new_character_deck = d.character_deck
+        self.assertGreater(len(original_character_deck), len(new_character_deck))
+        self.assertIsInstance(d.removeCardfromCharacterDeck(), CharacterCard)
+
+    def test_add_card_to_weapon_deck(self):
+        d = Deck()
+        original_weapon_deck = d.weapon_deck
+        c = WeaponCard("test")
+        d.addCardtoWeaponDeck(c)
+        new_weapon_deck = d.weapon_deck
+        self.assertLess(len(original_weapon_deck), len(new_weapon_deck))
+
+    def test_remove_card_from_weapon_deck(self):
+        d = Deck()
+        original_weapon_deck = d.weapon_deck
+        d.removeCardfromWeaponDeck()
+        new_weapon_deck = d.weapon_deck
+        self.assertGreater(len(original_weapon_deck), len(new_weapon_deck))
+        self.assertIsInstance(d.removeCardfromWeaponDeck(), WeaponCard)
+    
+    def test_add_card_to_location_deck(self):
+        d = Deck()
+        original_location_deck = d.location_deck
+        c = LocationCard("test")
+        d.addCardtoLocationDeck(c)
+        new_location_deck = d.location_deck
+        self.assertLess(len(original_location_deck), len(new_location_deck))
+
+    def test_remove_card_from_location_deck(self):
+        d = Deck()
+        original_location_deck = d.location_deck
+        d.removeCardfromLocationDeck()
+        new_location_deck = d.location_deck
+        self.assertGreater(len(original_location_deck), len(new_location_deck))
+        self.assertIsInstance(d.removeCardfromLocationDeck(), LocationCard)
     
     if __name__ == '__main__':
         unittest.main()
