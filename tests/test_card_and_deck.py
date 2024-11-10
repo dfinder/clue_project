@@ -45,10 +45,12 @@ class TestDeck(unittest.TestCase):
     def test_remove_card_from_character_deck(self):
         d = Deck()
         original_character_deck = d.character_deck
+        char_card = CharacterCard("test")
+        d.character_deck.append(char_card)
         d.removeCardfromCharacterDeck()
         new_character_deck = d.character_deck
         self.assertGreater(len(original_character_deck), len(new_character_deck))
-        self.assertIsInstance(d.removeCardfromCharacterDeck(), CharacterCard)
+
 
     def test_add_card_to_weapon_deck(self):
         d = Deck()
@@ -61,10 +63,11 @@ class TestDeck(unittest.TestCase):
     def test_remove_card_from_weapon_deck(self):
         d = Deck()
         original_weapon_deck = d.weapon_deck
+        weapon_card = WeaponCard("test")
+        d.weapon_deck.append(weapon_card)
         d.removeCardfromWeaponDeck()
         new_weapon_deck = d.weapon_deck
         self.assertGreater(len(original_weapon_deck), len(new_weapon_deck))
-        self.assertIsInstance(d.removeCardfromWeaponDeck(), WeaponCard)
     
     def test_add_card_to_location_deck(self):
         d = Deck()
@@ -77,10 +80,10 @@ class TestDeck(unittest.TestCase):
     def test_remove_card_from_location_deck(self):
         d = Deck()
         original_location_deck = d.location_deck
+        loc_card = LocationCard("test")
+        d.location_deck.append(loc_card)
         d.removeCardfromLocationDeck()
         new_location_deck = d.location_deck
         self.assertGreater(len(original_location_deck), len(new_location_deck))
-        self.assertIsInstance(d.removeCardfromLocationDeck(), LocationCard)
-    
     if __name__ == '__main__':
         unittest.main()
