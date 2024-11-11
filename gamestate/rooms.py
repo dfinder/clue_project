@@ -1,4 +1,3 @@
-
 from enum import Enum 
 
 class RoomEnum(Enum):
@@ -13,6 +12,13 @@ class RoomEnum(Enum):
     STUDY=8
 
 class Room(Location):
-    room_name:RoomEnum
+    def __init__(self, room_name: RoomEnum):
+        self.room_name = room_name  # Store the room enum
+        self.name = room_name.name.replace("_", " ").title()
+
+    def __repr__(self):
+        # print the room 
+        return f"Room: {self.name}"
+
 
      
