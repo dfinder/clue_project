@@ -1,16 +1,30 @@
 from gamestate import GameStateObject
 from enum import Enum 
+
 class CardType(Enum):
     CHARACTER = 0
     WEAPON = 1 
     LOCATION = 2
 
 class Card(GameStateObject):
-    #A card is more so a wrapper for a character, a weapon, or a room
-    pass
+    def __init__(self, name: str, card_type: CardType):
+        self.name = name          # The name of the card
+        self.card_type = card_type  # The type of card (CHARACTER, WEAPON, LOCATION)
+
+    def __repr__(self):
+        return f"{self.name} ({self.card_type.name})"
+
 class CharacterCard(Card):
-    pass
+    def __init__(self, name: str):
+        # Inherit from Card, with card_type set to CHARACTER
+        super().__init__(name, CardType.CHARACTER)
+
 class WeaponCard(Card):
-    pass
+    def __init__(self, name: str):
+        # Inherit from Card, with card_type set to WEAPON
+        super().__init__(name, CardType.WEAPON)
+    
 class LocationCard(Card):
-    pass
+    def __init__(self, name: str):
+        # Inherit from Card, with card_type set to LOCATION
+        super().__init__(name, CardType.LOCATION)
