@@ -13,7 +13,12 @@ class GameState(object):
     current_suggestion: tuple[Character,Character,Weapon,Room]|None
     suggestion_fulfilled = False
     suggestion_round=False
-    def __init__(self,seed,active:list[Character],char:Character):
+    def __init__(self,*args):
+        #seed,active:list[Character],char:Character
+
+        seed = args[0]
+        active = args[1:-1]
+        char = args[-1]
         print(list(map(lambda x: type(x),active)))
         self.user = char
         self.turn_order = active 
@@ -88,7 +93,7 @@ class GameState(object):
     def my_turn(self):
         return self.turn_order[0] == self.user
     def apply_action(self,action,*args):
-        return action(self,*args)
+        return action(self,*args) #self.action(args)
     def show_ui(self):
         return self.UInter.main_menu()
     def start_turn(self):

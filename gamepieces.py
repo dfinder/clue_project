@@ -97,9 +97,7 @@ def shuffle(deck:list[Card],seed:int)->list[Card]:
 class Cards:
     seed=40
     @staticmethod
-    
     def CharCards():
-        
         return list(map(Character,["Plum","Mustard","Green","Scarlet","White","Peacock"]))
     @staticmethod
     def WeaponCards():

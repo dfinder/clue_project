@@ -14,7 +14,7 @@ class ControllerController(object):
             if self.turn:
                 self.ui_controller.UI()
                 ui_message = self.ui_controller.process_input()
-                network_response = self.network_controller.prxocess_networking(ui_message)
+                network_response = self.network_controller.process_networking(ui_message)
                 game_state_response = self.gamestate_controller.process_action(network_response)
                 self.network_controller.process_networking_sync()
                 self.ui_controller.update_ui(game_state_response)

@@ -3,12 +3,13 @@ import socket
 import requests
 from dataclasses import dataclass
 # next create a socket object
-from typing import Optional, List
+from typing import List
+import gamepieces
 from ui import *
 from gamestate import *
- 
+from gamepieces import *
 class network_state(Enum):
-    UI_WAIT=0
+    UI_WAIT = 0
     HOST_WAIT = 1
     CLIENT_WAIT = 2
     GAME_WAIT = 3
@@ -60,13 +61,13 @@ class Client(object):
 
     def init_gamestate(self):
         #self.client_socket.connect((self.host_ip,1492))
- 
         #data_length = int(str(self.client_socket.recv(4),encoding='utf-8'))
         data = self.client_socket.recv(4096)
         print(data)
         action = self.decode_msg(data)
+        action.append(Character(self.player_token))
         print(action)
-        self.gamestate = GameState(action[0],action[1],Character(self.player_token))
+        self.gamestate = GameState(action)
         self.server_transmit("ACK")
     def client_wait_and_process(self):
         #self.client_socket.connect((self.host_ip,1492))
@@ -78,7 +79,7 @@ class Client(object):
         data_str = str(data,encoding="utf-8")
         partition = data_str.split("|")
         print(partition)
-        args = partition[1].split(",")
+        args = list(map(lambda x: network_unrepr(x),partition[1].split(",")))
         match partition[0]:
             case "SUGG":
                 return(GameState.suggestion,args)
@@ -93,7 +94,7 @@ class Client(object):
             case "ACK":
                 return "ACK"
             case "INIT":
-                return(args[0],list(map(lambda x: Character(x),args[1:])))
+                return(args)
     #Schema:
     #Move|Player Location
     #Suggestion|Player Suspect Weapon Location
@@ -125,7 +126,7 @@ class Server(object):
         print("Before we go anywhere, we need to select your character!")
         (self.token,remaining) = select_character(Cards.CharCards())
         s = socket.socket()
-        print ("Socket successfully created")
+        print("Socket successfully created")
         ip = requests.get('https://checkip.amazonaws.com').text.strip()
         # reserve a port on your computer in our
         # case it is 40674 but it can be anything
@@ -156,7 +157,10 @@ class Server(object):
         self.gamestate.start_turn()
         self.network_loop()
     def initialize_game_state(self):
-        init_args = (40,list(map(lambda x: x.char, self.clients))+[self.token],self.token)
+        init_args = [40]
+        init_args.extend(list(map(lambda x: x.char, self.clients)))
+        init_args.append(self.token)
+        init_args.append(self.token)
         print(init_args)
         self.gamestate = GameState(*init_args)
         encoded = [str(40)]+list(map(lambda x: str(x),init_args[1]))
@@ -208,10 +212,10 @@ class Server(object):
         data_str = str(data,encoding="utf-8")
         partition = data_str.split("|")
         print(partition)
-        args = partition[1].split(",")
+        args = list(map(lambda x: network_unrepr(x),partition[1].split(",")))
         match partition[0]:
             case "SUGG":
-                return(GameState.suggestion,args)
+                return(GameState.suggestion,args) #-> self.gs.suggestion(*args)
             case "SUGG RESP":
                 return(GameState.suggestion_response,args)
             case "ACCUSE":
@@ -223,4 +227,28 @@ class Server(object):
             case "ACK":
                 return "ACK"
             case "INIT":
-                return(args[0],args[1].split(","))
+                return(args)
+
+def network_repr(item:object)->str:
+    match item:
+        case isinstance(item,gamepieces.Passage):
+            return gamepieces.Passage(item).start+"-"+gamepieces.Passage(item).end
+        case isinstance(item,(gamepieces.Weapon,gamepieces.Character,gamepieces.Room)):
+            return str(item)
+        case isinstance(item,gamestate.StartingLoc):
+            return "STARTING_LOC"+str(item.piece)
+        
+            
+def network_unrepr(item:str)->object:
+    if "-" in item:
+        rooms = item.split("-")
+        return Passage(Room(rooms[0]),Room(rooms[1]),False)
+    if gamepieces.Weapon(item) in gamepieces.Cards.WeaponCards():
+        return gamepieces.Weapon(item)
+    if gamepieces.Character(item) in gamepieces.Cards.CharCards():
+        return gamepieces.Character(item)
+    if gamepieces.Room(item) in gamepieces.Cards.RoomCards():
+        return gamepieces.Room(item)
+    if item.isnumeric():
+        return int(item)
+    
