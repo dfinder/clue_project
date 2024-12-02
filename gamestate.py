@@ -15,17 +15,22 @@ class GameState(object):
     suggestion_round=False
     def __init__(self,*args):
         #seed,active:list[Character],char:Character
-
+        print(args)
         seed = args[0]
         active = args[1:-1]
+        print(f"ACTIVE{active}")
         char = args[-1]
         print(list(map(lambda x: type(x),active)))
+
         self.user = char
-        self.turn_order = active 
+        self.turn_order = [active[-1]]+list(active[:-1])
         self.players = [Player(piece,piece in active) for piece in Cards.CharCards()]
+
+        print(f"TURN ORDER{self.turn_order}")
         self.win_con,deck = Cards.selectWinCon()
-        
+        print("DO WE EVEN GET TO THE HANDS?")
         hands = Cards.deal(deck,len(active))
+        print(hands)
         #print(list(map(lambda x: x.piece,self.players)))
         for idx,i in enumerate(active):
             self.player(i).hand=hands[idx]
@@ -93,6 +98,7 @@ class GameState(object):
     def my_turn(self):
         return self.turn_order[0] == self.user
     def apply_action(self,action,*args):
+        print(args)
         return action(self,*args) #self.action(args)
     def show_ui(self):
         return self.UInter.main_menu()

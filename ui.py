@@ -10,10 +10,14 @@ class Option(object):
     response: Optional[str]=None
     def __repr__(self):
         self.label
-def menu(options:list[Option])->object:
+def show_map(): #UI Function
+    pass
+def print(msg:str):  #UI Function here
+    pass 
+def menu(options:list[Option])->object: #UI Function here
     for idx,option in enumerate(options):
         print(f"{idx}:{option.label}")
-    while not (response:=input("?")).isnumeric() and response>=len(options):
+    while not (response:=input("?")).isnumeric() and int(response)>=len(options):
         print(f"Please input x∈[0,{len(options)-1}]") 
         for idx,option in enumerate(options):
             print(f"{idx}:{option.label}")
@@ -60,10 +64,14 @@ class UserInterface(object):
         target = menu(list(map(lambda x: Option(x,("Move to "+str(x))),locations)))
         return ("MOVE",(self.player.piece,target))
     def end_turn(self):
-        return ("END TURN")
+        return ("END TURN",())
     def main_menu(self):#->tuple[callable,list[object]]:
         actions = []
-        actions.extend(self.turn_action_set)
+        if self.turn_action_set == []:
+            actions.append((self.end_turn,"End turn?"))
+        else:
+            actions.extend(self.turn_action_set)
+
         actions.append((self.check_map,"Check Map"))
         actions.append((self.check_knowledge,"Check Knowledge"))
         actions.append((self.roll_die,"Roll Die"))
@@ -76,7 +84,7 @@ class UserInterface(object):
                 if self.player.teleported and not isinstance(ret[1][1],Room): #If you've teleported,moved, and you're not in a room, you can't suggest
                     self.turn_action_set.remove(self.suggestion)
                 if not self.player.teleported and isinstance(ret[1][1],Room): #If you've not telported and you've moved, you can suggest now
-                    self.turn_action_set.add(self.suggestion)
+                    self.turn_action_set.add((self.suggestion,"Make a suggestion"))
             case "SUGG": #If you've made a suggestion,
                 self.turn_action_set.remove((self.suggestion,"Make a suggestion")) #If you've suggested, you cannot suggest again
                 try:

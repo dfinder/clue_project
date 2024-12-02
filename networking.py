@@ -35,27 +35,34 @@ class Client(object):
         self.init_gamestate()
         self.network_loop()
     def network_loop(self):
+        print("I ENTERED THE NETWORK LOOP?")
         while len(list(filter(lambda x: not x.lost, self.gamestate.players)))>1:
             match self.network_state:
                 case network_state.UI_WAIT:
+                    print("UI WAIT")
                     self.server_transmit(self.gamestate.show_ui())
                     self.network_state=network_state.HOST_WAIT
                 case network_state.HOST_WAIT:
+                    print("HOST WAIT")
                     action = self.client_wait_and_process()
                     self.network_state = network_state.CLIENT_WAIT
                 case network_state.CLIENT_WAIT:
-                    self.server_transmit("ACK")
-                    self.network_state = network_state.GAME_WAIT
-                    self.gamestate.apply_action(action[0],action[1])
+                    print("CLIENT WAIT")
+                    #self.server_transmit(["ACK",()])
+                    self.network_state = network_state.READY_WAIT
+                    self.gamestate.apply_action(action[0],*action[1])
                 case network_state.GAME_WAIT:
+                    print("GAME WAIT")
                     self.client_wait_and_process()
                     self.network_state=network_state.READY_WAIT
                 case network_state.READY_WAIT:
+                    print("READY_WAIT")
+                    print("TURN ORDER?")
                     if self.gamestate.my_turn():
-                        self.client_wait_and_process()
+                        print("MY TURN")
                         self.network_state=network_state.UI_WAIT
                     else:
-                        self.server_transmit("ACK")
+                        #self.server_transmit(["ACK",()])
                         self.network_state=network_state.HOST_WAIT
 
 
@@ -65,9 +72,10 @@ class Client(object):
         data = self.client_socket.recv(4096)
         print(data)
         action = self.decode_msg(data)
+        action.pop()
         action.append(Character(self.player_token))
         print(action)
-        self.gamestate = GameState(action)
+        self.gamestate = GameState(*action)
         self.server_transmit("ACK")
     def client_wait_and_process(self):
         #self.client_socket.connect((self.host_ip,1492))
@@ -107,7 +115,7 @@ class Client(object):
         encoded = self.encode_data(data)
         self.client_socket.sendall(encoded)
     def encode_data(self,data):
-        return bytes("|".join([data[0],",".join(map(lambda x: str(x),data[1]))]),encoding='utf-8')
+        return bytes("|".join([data[0],",".join(map(lambda x: network_repr(x),data[1]))]),encoding='utf-8')
        
         return(msg,length)
 @dataclass
@@ -161,53 +169,72 @@ class Server(object):
         init_args.extend(list(map(lambda x: x.char, self.clients)))
         init_args.append(self.token)
         init_args.append(self.token)
-        print(init_args)
+        print(f"INIT ARGS{init_args}")
         self.gamestate = GameState(*init_args)
-        encoded = [str(40)]+list(map(lambda x: str(x),init_args[1]))
+        encoded = [str(init_args[0])]
+        encoded.extend(list(map(lambda x: network_repr(x),init_args[1:])))
+        print(f"ENCODED 1{encoded}")
         self.clients_transmit(["INIT",encoded])
     def clients_transmit(self,msg):
         print(self.clients)
-        for client_conn in self.clients: #finish me
+        print(f"MESSAGE{msg}")
+        for client_conn in self.clients: 
             print(msg)
-            encoded = "|".join([msg[0],",".join(map(lambda x: str(x),msg[1]))])
+            encoded = "|".join([msg[0],",".join(msg[1])])
+            print(encoded)
             client_conn.connection.sendall(bytes(encoded,encoding='utf-8'))
+
+        return bytes(encoded,encoding='utf-8')
     def ready_syn(self):
           for client_conn in filter(lambda x: x.char != self.gamestate.turn_order[0],self.clients):
               result=client_conn.connection.recv(4096)
-              assert(result=="ACK")
     def clients_wait(self):
           for client_conn in self.clients: 
               result = client_conn.connection.recv(4096)
-              assert(result=="ACK")
+              print(result)
+              #assert(result=="ACK")
     def player_wait(self):
-        player_conn:ServerPlayerPrimitive = filter(lambda x: x.char == self.gamestate.turn_order[0],self.clients)[0]
-        data = player_conn.recv(4096)
+        player_conn:ServerPlayerPrimitive = list(filter(lambda x: x.char == self.gamestate.turn_order[0],self.clients))[0]
+        data = player_conn.connection.recv(4096)
         return self.decode_msg(data)
     def network_loop(self):
         while len(list(filter(lambda x: not x.lost, self.gamestate.players)))>1:
             match self.network_state:
                 case network_state.UI_WAIT:
+                    print("UI_WAIT")
                     action = self.gamestate.show_ui()
-                    self.clients_transmit(action)
+                    #print(f"ACTION IN NETWORK LOOP{type(action[1][0])}")
+                    message = [action[0]]
+                    message.append(list(map(lambda x: network_repr(x),action[1])))
+                    print(message)
+                    action = self.decode_msg(self.clients_transmit(message))
+                    #message = self.decode_msg(message)
                     self.network_state = network_state.CLIENT_WAIT
                 case network_state.HOST_WAIT:
-                    action = self.player_wait()
-                    self.clients_transmit(action)
+                    print("HOST_WAIT")
+                    message = self.player_wait()
+                    self.clients_transmit(message)
                     self.network_state=network_state.CLIENT_WAIT
                 case network_state.CLIENT_WAIT:
-                    self.clients_wait()
+                    print("CLIENT_WAIT")
+                    #self.clients_wait()
                     self.network_state = network_state.GAME_WAIT
                 case network_state.GAME_WAIT:
-                    self.gamestate.apply_action(action[0],action[1])
-                    self.clients_transmit("ACK") #GAME SYNC
+                    print("APPLY ACTION")
+                    print(action)
+                    self.gamestate.apply_action(action[0],*action[1])
+                    self.network_state=network_state.READY_WAIT
+                    #self.clients_transmit(["ACK",()]) #GAME SYNC
                 case network_state.READY_WAIT:
+                    print("READY_WAIT")
                     if self.gamestate.my_turn():
-                        self.clients_wait()
+                        print("MY TURN?")
+                        #self.clients_wait()
                         self.network_state=network_state.UI_WAIT
                     else:
                         self.ready_syn()
                         self.network_state=network_state.HOST_WAIT
-
+    
     def decode_msg(self,data):
         data_str = str(data,encoding="utf-8")
         partition = data_str.split("|")
@@ -224,19 +251,18 @@ class Server(object):
                 return(GameState.end_turn,())
             case "MOVE":
                 return(GameState.move,args)
-            case "ACK":
-                return "ACK"
             case "INIT":
                 return(args)
 
 def network_repr(item:object)->str:
-    match item:
-        case isinstance(item,gamepieces.Passage):
-            return gamepieces.Passage(item).start+"-"+gamepieces.Passage(item).end
-        case isinstance(item,(gamepieces.Weapon,gamepieces.Character,gamepieces.Room)):
-            return str(item)
-        case isinstance(item,gamestate.StartingLoc):
-            return "STARTING_LOC"+str(item.piece)
+    #print(item)
+    if isinstance(item,gamepieces.Passage):
+        return item.start+"-"+item.end
+    
+    if isinstance(item,gamepieces.StartingLoc):
+        return "STARTING_LOC"+str(item.piece)
+    
+    return str(item)
         
             
 def network_unrepr(item:str)->object:

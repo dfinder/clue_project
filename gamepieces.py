@@ -136,6 +136,8 @@ class Cards:
         for i in range(hand_count):
             hands.append([])
         while len(remaining)!=0:
+            #print(len(remaining))
+            #print(range(hand_count))
             for i in range(hand_count):
                 if len(remaining)>0:
                     hands[i].append(remaining.pop())
