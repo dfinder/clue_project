@@ -1,5 +1,3 @@
-
-
 from player import Player
 import ui
 import time
@@ -27,6 +25,7 @@ class GameState(object):
             self.player(i).knowledge=hands[idx]
         print(f"{type(self.user)}")
         print(f"Your hand of cards is {self.player().hand}")
+        print(f"The host will go first.")
     def player(self,char=None)->Player:
         if char == None:
             return list(filter(lambda x: x.piece == self.user, self.players))[0]
@@ -60,6 +59,7 @@ class GameState(object):
         print(f"(an audience member faints)")
         print(f"They will open up the envelope of destiny, and either be destroyed or reign triumphant")
         time.sleep(1)
+        ##should consider having this as its own seperate function?
         if (suspect,weapon,location)==self.wincon:
             for i in filter(lambda x: x!=player,self.players):
                 i.lost=True

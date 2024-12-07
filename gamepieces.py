@@ -17,7 +17,6 @@ class Card(object):
         return self.name
     def __repr__(self):
         return self.name
-    
 class Location(object):
     def get_adjacency()->list[TLocation]:
         return [Passage("Study","Kitchen",True),
@@ -56,7 +55,7 @@ class Passage(Location):
 class Room(Card,Location):
     def get_class(self)->str:
         return "Room"
-    def match_passage(self,passage:Passage)->Location|None:
+    def match_passage(self,passage:Passage)->Location|None: 
         match passage:
             case Passage(self.name,end,True): return Room(end)
             case Passage(self.name,end,False): return passage 
@@ -90,20 +89,42 @@ class StartingLoc(Location):
         return str(self.piece)+" Starting Location"
 
 def shuffle(deck:list[Card],seed:int)->list[Card]:
+    '''
+    shuffles the cards
+
+    '''
     if len(deck)==0:
         return deck
     seed = ((seed+3)**2) % len(deck)
     return [deck.pop()]+shuffle(deck[:seed]+deck[seed:],seed)
+
+def getCardfromName(cardName: str, deck: list[Card]) -> Card:
+    '''
+    returns a card when the user inputs the card name. 
+    Params: cardName, the name of the card represented as a string
+            deck: the deck of cards represented as a list of cards
+    Returns: A card object with the card name
+    '''
+    for card in deck:
+        if card.get_name() == cardName:
+            return Card
 class Cards:
     seed=40
-    @staticmethod
     
+    @staticmethod
     def CharCards():
-        
+        '''
+        returns a list of character cards using map
+        '''
         return list(map(Character,["Plum","Mustard","Green","Scarlet","White","Peacock"]))
+    
     @staticmethod
     def WeaponCards():
+        '''
+        returns a list of weapons cards using map
+        '''
         return list(map(Weapon,["Candlestick","Dagger","Pipe","Revolver","Rope","Wench"]))
+    
     WeaponMurderActions = lambda x: "He was murdered by being"+[
         "bashed over the head",
         "stabbed in the gut",
@@ -112,28 +133,45 @@ class Cards:
         "strangled",
         "beaten"
     ][Cards.WeaponCards.index(Weapon(x))]+" with the ["+x+"]!"
+    
     @staticmethod
     def RoomCards():
+        '''
+        creates the list of room cards
+        '''
         return list(map(Room,["Kitchen","Ball","Conservatory","Billard","Library","Study","Dining","Hall","Lounge"]))
     RoomIsRoom = lambda x: x+ ["","room",""," Room","",""," Room","",""][Cards.RoomCards.index(Room(x))]
     prefix = lambda x: Cards.namePrefixMap[str(x)]+" "+x
     namePrefixMap = {"Plum":"Prof.","Mustard":"Col.","Green":"Rev.","Scarlet":"Ms.","White":"Mrs.","Peacock":"Mrs."}
+    
     @staticmethod
     def shuffle(remaining:list[Card],seed:int)->list[Card]:
         if len(remaining)==1:
             return remaining
         return Cards.shuffle(remaining=Cards.rotate(remaining[1:],((seed+1)**2)%len(remaining[1:])),seed=((seed+1)**2)%len(remaining[1:]))+[remaining[0]]
+    
     @staticmethod
     def rotate(l, n):
+        '''
+        rotates the cards
+        '''
         return l[n:] + l[:n]
+    
     @staticmethod
     def selectWinCon()->tuple[tuple[Character,Weapon,Room],list[Card]]:
+        '''
+        selects a character, weapons, and room card that will go in the envelope
+        '''
         characters =Cards.shuffle(remaining=Cards.CharCards(),seed=Cards.seed)
         weapons = Cards.shuffle(Cards.WeaponCards(),Cards.seed)
         rooms = Cards.shuffle(Cards.RoomCards(),Cards.seed)
         return ((characters.pop(),weapons.pop(),rooms.pop()),Cards.shuffle(([]+characters+weapons+rooms),seed=Cards.seed))
+    
     @staticmethod
     def deal(remaining:list[Card],hand_count:int)->list[list[Card]]:
+        '''
+        deals hands to players
+        '''
         hands = []
         for i in range(hand_count):
             hands.append([])

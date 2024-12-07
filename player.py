@@ -6,6 +6,7 @@ class Player(object):
     telported: bool 
     lost: bool 
     active: bool
+    
     def __init__(self,char:Character,is_playing=True):
         self.hand = [] 
         self.piece = char

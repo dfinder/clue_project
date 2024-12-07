@@ -68,6 +68,7 @@ class Client(object):
         print(action)
         self.gamestate = GameState(action[0],action[1],Character(self.player_token))
         self.server_transmit("ACK")
+    
     def client_wait_and_process(self):
         #self.client_socket.connect((self.host_ip,1492))
         data = self.client_socket.recv(4096)
