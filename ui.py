@@ -13,10 +13,19 @@ class Option(object):
 def menu(options:list[Option])->object:
     for idx,option in enumerate(options):
         print(f"{idx}:{option.label}")
-    while not (response:=input("?")).isnumeric() and response>=len(options):
-        print(f"Please input x∈[0,{len(options)-1}]") 
-        for idx,option in enumerate(options):
-            print(f"{idx}:{option.label}")
+    while True:
+        response = input("?")
+        if not response.isnumeric():
+            print(f"Please input x∈[0,{len(options)-1}]")
+        elif int(response) >= len(options):
+            print(f"Invalid choice. Please choose a number within the range.")
+        else:
+            break  # Valid input, exit the loop
+
+        for idx, option in enumerate(options):
+            print(f"{idx}: {option.label}")
+
+    # Now `response` is valid, so safely access the list
     option = options[int(response)]
     (option.response is None) or print(option.response)
     return options[int(response)].result
