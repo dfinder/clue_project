@@ -29,15 +29,15 @@ def select_character(characters:List[Character])->tuple[Character,list[Character
     my_character:Character = menu(character_options)
     print(my_character)
     characters.remove(my_character)
-    print((my_character,characters))
+    #print((my_character,characters))
     return (my_character,characters)
 
 def client():
     s = socket.socket()
-    ip = input("IP Address?")
+    #ip = input("IP Address?")
     #port = int(input("Port?"))
     #s.bind(('',1493))
-    s.connect((ip,1492))
+    #s.connect((ip,1492))
     char_list = s.recv(4096)
     characters = str(char_list,encoding='utf-8').split(",")
     (my_character,remaining) = select_character(characters)
@@ -56,20 +56,20 @@ def server():
     # reserve a port on your computer in our
     # case it is 40674 but it can be anything
     port = 1492
-    print(f"Tell people to connect with \n ip:{ip} \n port:{port}")
+    #print(f"Tell people to connect with \n ip:{ip} \n port:{port}")
     s.bind(('', port))
-    print ("socket binded to %s" %(port))
+    print ("socket bound to %s" %(port))
 
     # put the socket into listening mode
     s.listen(6)#We can have a maximum of 6 players in this game.
-    print ("socket is listening")
     clients = []
     while True:
 
         # Establish connection with client.
 
         c, addr=s.accept()
-        print('Got connection from', addr )
+        print('A player has joined. Got connection from', addr )
+        players_joined -= 1
 
         # send a thank you message to the client.
         #c.send(b'Thank you for connecting')

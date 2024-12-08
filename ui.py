@@ -30,12 +30,12 @@ def menu(options:list[Option])->object:
     (option.response is None) or print(option.response)
     return options[int(response)].result
 def select_character(characters:List[Character])->tuple[Character,list[Character]]:
-    print("SELECT A CHARACTER:")
+    print("To select a character, press the number next to the character name:")
     character_options = list(map(lambda x: Option(x,Cards.prefix(str(x)),f"You have selected: {Cards.prefix(str(x))}"),characters))
     my_character:Character = menu(character_options)
-    print(my_character)
+    #print(my_character)
     characters.remove(my_character)
-    print((my_character,characters))
+    #print((my_character,characters))
     return (my_character,characters)
 class UserInterface(object):
     turn_action_set:list[tuple[callable,str]]
