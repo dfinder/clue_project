@@ -28,9 +28,11 @@ class Client(object):
         self.client_socket.connect((ip,1492))
         char_list = self.client_socket.recv(4096)
         characters = str(char_list,encoding='utf-8').split(",")
+        print("Please select your character")
+        print("If you do not see a character, that's because the character has been selected by another player.")
         (self.player_token,_) = select_character(characters)
         self.client_socket.send(bytes(self.player_token,encoding='utf-8'))
-        #self.client_socket.bind(('',1492)) #wait to hear gamestate.
+        print("Waiting on other players to join")
         self.init_gamestate()
         self.network_loop()
     def network_loop(self):
@@ -122,15 +124,15 @@ class Server(object):
     token = None
     network_state = network_state.UI_WAIT
     def __init__(self):
-        print("Howdy, you're the host!")
+        print("Howdy, you're the host!. That means players will join your game.")
         print("Before we go anywhere, we need to select your character!")
         (self.token,remaining) = select_character(Cards.CharCards())
         s = socket.socket()
         print ("Socket successfully created")
-        ip = requests.get('https://checkip.amazonaws.com').text.strip()
         # reserve a port on your computer in our
         # case it is 40674 but it can be anything
-        print(f"Tell people to connect with \n ip:{ip} \n port:{self.port}")
+       
+        
 
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind(('', self.port))
@@ -138,10 +140,14 @@ class Server(object):
         # put the socket into listening mode
         s.listen(5)#We can have a maximum of 6 players in this game.
         print("socket is listening")
+        players_that_can_join = 5
+        print("The other players can now join the game.")
+        print ("Waiting for players. Up to " + str(players_that_can_join) + " more people can join.")
         self.clients = []
         while remaining != []:
             c, addr=s.accept()
             print('Got connection from', addr )
+            players_that_can_join -= 1
             # send a thank you message to the client.
             #c.send(b'Thank you for connecting')
             c.sendall(bytes(",".join(map(lambda x: str(x), remaining)),encoding='utf-8'))
@@ -150,7 +156,10 @@ class Server(object):
             self.clients.append((ServerPlayerPrimitive(c,addr,client_char)))
             remaining.remove(client_char)
             #c.close()
-            print("Continue accepting?")
+            if players_that_can_join == 0:
+                print("The maximum number of players have joined! Time to start")
+                break
+            print("Continue accepting players? Up to " + str(players_that_can_join) + " more people can join.")
             if menu([Option(False,"Yes"),Option(True,"No")]):
                 break
         self.initialize_game_state()
@@ -158,7 +167,7 @@ class Server(object):
         self.network_loop()
     def initialize_game_state(self):
         init_args = (40,list(map(lambda x: x.char, self.clients))+[self.token],self.token)
-        print(init_args)
+        #print(init_args), #We don't need to print this it's not useful for the user
         self.gamestate = GameState(*init_args)
         encoded = [str(40)]+list(map(lambda x: str(x),init_args[1]))
         self.clients_transmit(["INIT",encoded])
